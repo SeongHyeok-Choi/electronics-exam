@@ -57,6 +57,8 @@ const miniQuizBar = document.getElementById('mini-quiz-bar');
 const newMiniQuizBtn = document.getElementById('new-mini-quiz-btn');
 const headerMiniQuizBtn = document.getElementById('header-mini-quiz-btn');
 
+const practiceBar = document.getElementById('practice-bar');
+const shuffleQuestionsBtn = document.getElementById('shuffle-questions-btn');
 const wrongResetBar = document.getElementById('wrong-reset-bar');
 const resetWrongBtn = document.getElementById('reset-wrong-btn');
 
@@ -445,9 +447,33 @@ modeTabs.forEach(tab => {
       wrongResetBar.style.display = 'none';
     }
 
+    if (currentMode === 'practice' || currentMode === 'exam') {
+      if (practiceBar) practiceBar.style.display = 'block';
+    } else {
+      if (practiceBar) practiceBar.style.display = 'none';
+    }
+
     renderQuestion();
   });
 });
+
+// Shuffle questions in current subject
+function shuffleCurrentSubject() {
+  const currentData = allSubjects[currentSubjectId].data;
+  for (let i = currentData.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [currentData[i], currentData[j]] = [currentData[j], currentData[i]];
+  }
+  currentQuestionIndex = 0;
+}
+
+if (shuffleQuestionsBtn) {
+  shuffleQuestionsBtn.addEventListener('click', () => {
+    shuffleCurrentSubject();
+    alert("현재 과목의 문제 순서가 무작위로 새로 섞였습니다!");
+    renderQuestion();
+  });
+}
 
 newMiniQuizBtn.addEventListener('click', () => {
   generateMiniQuiz();

@@ -16,7 +16,7 @@
   <meta name="theme-color" content="#0f172a">
 
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=4001">
+  <link rel="stylesheet" href="css/styles.css?v=4003">
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -84,6 +84,13 @@
         <button class="tab-btn" data-mode="exam">⏱️ 실전 모의고사</button>
         <button class="tab-btn" data-mode="wrong">❌ 오답 노트</button>
         <button class="tab-btn" data-mode="bookmark">⭐️ 북마크</button>
+      </div>
+
+      <!-- Practice Shuffle Action Bar -->
+      <div id="practice-bar" style="text-align:right; margin: 4px 0 8px;">
+        <button class="icon-btn" id="shuffle-questions-btn" style="background:var(--primary-light); color:var(--primary); font-weight:700; display:inline-flex;">
+          <i data-lucide="shuffle"></i> 🔀 문제 순서 무작위 섞기
+        </button>
       </div>
 
       <!-- Mini Quiz Action Bar -->
@@ -192,7 +199,7 @@
     </div>
   </div>
 
-  <!-- Formula Summary Modal (Dynamic Rendered) -->
+  <!-- Formula Summary Modal -->
   <div class="modal-overlay" id="formula-modal">
     <div class="modal-content large-modal">
       <div class="modal-header">
@@ -203,7 +210,7 @@
     </div>
   </div>
 
-  <!-- Summary Notes Modal (Dynamic Rendered) -->
+  <!-- Summary Notes Modal -->
   <div class="modal-overlay" id="summary-modal">
     <div class="modal-content large-modal">
       <div class="modal-header">
@@ -259,6 +266,6 @@
   </div>
 
   <!-- Application Modules -->
-  <script type="module" src="js/app.js?v=4001"></script>
+  <script type="module" src="js/app.js?v=4003"></script>
 </body>
 </html>
