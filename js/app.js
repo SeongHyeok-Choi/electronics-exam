@@ -26,10 +26,11 @@ let allSubjects = loadSubjectData();
 
 // App State
 let currentSubjectId = 1;
-let currentMode = 'practice'; // 'practice' | 'exam' | 'wrong' | 'bookmark'
+let currentMode = 'practice'; // 'practice' | 'mini10' | 'exam' | 'wrong' | 'bookmark'
 let currentQuestionIndex = 0;
 let userAnswers = {};
 let searchQuery = '';
+let miniQuizQuestions = [];
 
 let wrongQuestions = JSON.parse(localStorage.getItem('wrong_questions') || '[]');
 let bookmarkedQuestions = JSON.parse(localStorage.getItem('bookmarked_questions') || '[]');
@@ -50,6 +51,9 @@ const scoreInfo = document.getElementById('score-info');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const bookmarkBtn = document.getElementById('bookmark-btn');
+
+const miniQuizBar = document.getElementById('mini-quiz-bar');
+const newMiniQuizBtn = document.getElementById('new-mini-quiz-btn');
 
 // Modals
 const omrBtn = document.getElementById('omr-btn');
@@ -73,10 +77,77 @@ const qrModal = document.getElementById('qr-modal');
 const closeQr = document.getElementById('close-qr');
 const themeToggle = document.getElementById('theme-toggle');
 
+// Restore Saved User Position
+function restoreUserPosition() {
+  const savedPos = localStorage.getItem('last_user_position');
+  if (savedPos) {
+    try {
+      const pos = JSON.parse(savedPos);
+      if (pos.mode) currentMode = pos.mode;
+      if (pos.subjectId) currentSubjectId = pos.subjectId;
+      if (pos.questionIndex !== undefined) currentQuestionIndex = pos.questionIndex;
+
+      // Update Mode Tab active state
+      modeTabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.mode === currentMode);
+      });
+
+      // Update Subject Card active state
+      subjectCards.forEach(card => {
+        card.classList.toggle('active', parseInt(card.dataset.subject, 10) === currentSubjectId);
+      });
+
+      const subSelector = document.getElementById('subject-selector');
+      if (currentMode === 'wrong' || currentMode === 'bookmark' || currentMode === 'mini10') {
+        subSelector.style.display = 'none';
+      } else {
+        subSelector.style.display = 'grid';
+      }
+
+      if (currentMode === 'mini10') {
+        miniQuizBar.style.display = 'block';
+        generateMiniQuiz();
+      }
+    } catch (e) {
+      console.error("Failed to restore position", e);
+    }
+  }
+}
+
+// Save Current Position
+function saveUserPosition() {
+  const pos = {
+    mode: currentMode,
+    subjectId: currentSubjectId,
+    questionIndex: currentQuestionIndex
+  };
+  localStorage.setItem('last_user_position', JSON.stringify(pos));
+}
+
+// Generate 10 Random Mini Quiz Questions from all 800 questions
+function generateMiniQuiz() {
+  const pool = [];
+  Object.values(allSubjects).forEach(sub => {
+    sub.data.forEach(q => pool.push(q));
+  });
+
+  // Shuffle pool (Fisher-Yates)
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  miniQuizQuestions = pool.slice(0, 10);
+  currentQuestionIndex = 0;
+}
+
 // Helper to filter active question list
 function getActiveQuestions() {
   let list = [];
-  if (currentMode === 'wrong') {
+  if (currentMode === 'mini10') {
+    if (miniQuizQuestions.length === 0) generateMiniQuiz();
+    list = miniQuizQuestions;
+  } else if (currentMode === 'wrong') {
     Object.values(allSubjects).forEach(sub => {
       sub.data.forEach(q => {
         if (wrongQuestions.includes(q.id)) list.push(q);
@@ -107,6 +178,8 @@ function getActiveQuestions() {
 
 // Render Question Card
 function renderQuestion() {
+  saveUserPosition(); // Auto-save current location
+
   const questions = getActiveQuestions();
 
   if (!questions || questions.length === 0) {
@@ -136,7 +209,12 @@ function renderQuestion() {
     }
   }
 
-  subjectTag.textContent = subName;
+  if (currentMode === 'mini10') {
+    subjectTag.textContent = `🎲 미니퀴즈 세트 (랜덤 10제) - ${subName}`;
+  } else {
+    subjectTag.textContent = subName;
+  }
+
   questionText.textContent = q.question;
 
   // Render SVG Technical Diagram if present
@@ -182,7 +260,7 @@ function renderQuestion() {
   });
 
   // Render Explanation
-  if (isAnswered || currentMode === 'practice') {
+  if (isAnswered || currentMode === 'practice' || currentMode === 'mini10') {
     if (isAnswered) {
       explanationContent.innerHTML = `
         <strong>[정답: ${q.answer + 1}번]</strong><br/><br/>
@@ -301,14 +379,26 @@ modeTabs.forEach(tab => {
     currentQuestionIndex = 0;
 
     const subSelector = document.getElementById('subject-selector');
-    if (currentMode === 'wrong' || currentMode === 'bookmark') {
+    if (currentMode === 'wrong' || currentMode === 'bookmark' || currentMode === 'mini10') {
       subSelector.style.display = 'none';
     } else {
       subSelector.style.display = 'grid';
     }
 
+    if (currentMode === 'mini10') {
+      miniQuizBar.style.display = 'block';
+      generateMiniQuiz();
+    } else {
+      miniQuizBar.style.display = 'none';
+    }
+
     renderQuestion();
   });
+});
+
+newMiniQuizBtn.addEventListener('click', () => {
+  generateMiniQuiz();
+  renderQuestion();
 });
 
 // Event Listeners: Subject Selection
@@ -426,6 +516,7 @@ if ('serviceWorker' in navigator) {
 
 // App Initialization
 document.addEventListener('DOMContentLoaded', () => {
+  restoreUserPosition();
   renderQuestion();
   if (window.lucide) window.lucide.createIcons();
 });

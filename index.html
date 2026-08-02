@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>전자기사 Master - 800문제 풀이 & 회로도 & 문제 관리자</title>
+  <title>전자기사 Master - 800문제 풀이 & 회로도 & 미니퀴즈</title>
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -66,10 +66,18 @@
 
       <!-- Mode Tabs -->
       <div class="tab-group" id="mode-tabs">
-        <button class="tab-btn active" data-mode="practice">📖 연습 모드 (해설 즉시확인)</button>
+        <button class="tab-btn active" data-mode="practice">📖 연습 모드</button>
+        <button class="tab-btn" data-mode="mini10">🎲 10문제 미니퀴즈</button>
         <button class="tab-btn" data-mode="exam">⏱️ 실전 모의고사</button>
         <button class="tab-btn" data-mode="wrong">❌ 오답 노트</button>
         <button class="tab-btn" data-mode="bookmark">⭐️ 북마크</button>
+      </div>
+
+      <!-- Mini Quiz New Set Action -->
+      <div id="mini-quiz-bar" style="display:none; text-align:right; margin-bottom: 6px;">
+        <button class="icon-btn" id="new-mini-quiz-btn" style="background:var(--primary); color:white; display:inline-flex;">
+          <i data-lucide="shuffle"></i> 새로운 랜덤 10문제 뽑기
+        </button>
       </div>
 
       <!-- Subject Cards Grid -->
@@ -176,7 +184,7 @@
           <h4>1과목 전기자기학</h4>
           <p>• 쿨롱의 힘: F = k · (q1·q2) / r² [N]</p>
           <p>• 전계 E = F / q = σ / ε₀ [V/m]</p>
-          <p>• 콘덴서 에너 지: W = 1/2 C V² = Q² / (2C) [J]</p>
+          <p>• 콘덴서 에너지: W = 1/2 C V² = Q² / (2C) [J]</p>
           <p>• 인덕터 자기에너지: W = 1/2 L I² [J]</p>
           <p>• 맥스웰 4방정식: ∇·D=ρ, ∇·B=0, ∇×E=-∂B/∂t, ∇×H=J+∂D/∂t</p>
         </div>
@@ -203,7 +211,7 @@
     </div>
   </div>
 
-  <!-- Question Manager & JSON Import/Export Modal -->
+  <!-- Question Manager Modal -->
   <div class="modal-overlay" id="manage-modal">
     <div class="modal-content">
       <div class="modal-header">
