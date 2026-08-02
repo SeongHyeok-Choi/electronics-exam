@@ -354,22 +354,22 @@ function renderOMRGrid() {
   });
 }
 
-// Detailed Formula Renderer
+// Detailed Formula Renderer (Handwritten Notebook Style)
 function renderDetailedFormulas() {
   formulaListContainer.innerHTML = '';
   Object.values(detailedFormulas).forEach(subFormulas => {
     const card = document.createElement('div');
     card.className = 'formula-card';
     
-    let html = `<h3 style="color:var(--primary); font-size:1.15rem; margin-bottom:14px; border-bottom:2px solid var(--primary); padding-bottom:6px;">${subFormulas.title}</h3>`;
+    let html = `<h3 style="color:#f59e0b; font-size:1.2rem; margin-bottom:14px; border-bottom:2px solid #f59e0b; padding-bottom:6px;">${subFormulas.title}</h3>`;
     subFormulas.formulas.forEach(f => {
       html += `
-        <div style="margin-top:16px; background:rgba(255,255,255,0.03); border:1px solid var(--card-border); padding:14px; border-radius:10px;">
-          <h4 style="color:#f59e0b; font-size:1rem; margin-bottom:6px;">${f.topic}</h4>
-          <div style="background:rgba(99, 102, 241, 0.15); border-left:4px solid #6366f1; padding:10px 14px; border-radius:6px; font-weight:700; font-size:1.02rem; color:#818cf8; font-family:monospace; margin:8px 0; overflow-x:auto;">
+        <div class="notebook-formula-box">
+          <h4 style="color:#0f172a; font-size:1.05rem; font-weight:800; margin-bottom:6px;">📌 ${f.topic}</h4>
+          <div class="handwrite-eq">
             ${f.eq}
           </div>
-          <p style="white-space:pre-line; margin-top:8px; font-size:0.92rem; line-height:1.6; color:var(--text-main);">${f.desc}</p>
+          <p class="handwrite-desc" style="white-space:pre-line;">${f.desc}</p>
         </div>
       `;
     });

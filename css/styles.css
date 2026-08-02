@@ -540,18 +540,62 @@ header {
   outline: 2px solid var(--primary);
 }
 
-/* Formula Cards */
+/* Formula Cards - Handwriting Notebook Style */
 .formula-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .formula-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: #1e293b;
   border: 1px solid var(--card-border);
   border-radius: 12px;
+  padding: 18px;
+}
+
+.notebook-formula-box {
+  background: #fef08a !important;
+  color: #1e1b4b !important;
+  border: 2px solid #eab308 !important;
+  border-radius: 10px;
   padding: 16px;
+  margin: 12px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  position: relative;
+}
+
+.notebook-formula-box::before {
+  content: '📝 HANDWRITTEN NOTE';
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: #eab308;
+  color: #1e1b4b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.handwrite-eq {
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+  padding: 10px 14px !important;
+  border-left: 4px solid #d97706 !important;
+  border-radius: 6px;
+  font-family: 'Courier New', Courier, monospace !important;
+  margin: 10px 0 !important;
+}
+
+.handwrite-desc {
+  color: #334155 !important;
+  font-weight: 600 !important;
+  line-height: 1.7 !important;
+  font-size: 0.95rem !important;
 }
 
 .formula-card h4 {
