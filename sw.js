@@ -1,9 +1,9 @@
-const CACHE_NAME = 'electronics-exam-v4002-force';
+const CACHE_NAME = 'electronics-exam-v4004-force-refresh';
 const ASSETS = [
   './',
-  './index.html?v=4001',
-  './css/styles.css?v=4001',
-  './js/app.js?v=4001',
+  './index.html?v=4004',
+  './css/styles.css?v=4004',
+  './js/app.js?v=4004',
   './js/circuitSVGs.js',
   './js/summaryData.js',
   './js/data/subject1.js',
@@ -36,7 +36,7 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Network First strategy to ensure latest 4000 questions update
+// Network First strategy
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     fetch(e.request).catch(() => caches.match(e.request))

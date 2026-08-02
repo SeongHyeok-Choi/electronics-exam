@@ -361,12 +361,15 @@ function renderDetailedFormulas() {
     const card = document.createElement('div');
     card.className = 'formula-card';
     
-    let html = `<h4>${subFormulas.title}</h4>`;
+    let html = `<h3 style="color:var(--primary); font-size:1.15rem; margin-bottom:14px; border-bottom:2px solid var(--primary); padding-bottom:6px;">${subFormulas.title}</h3>`;
     subFormulas.formulas.forEach(f => {
       html += `
-        <div style="margin-top:10px;">
-          <strong style="color:var(--warning); font-size:0.95rem;">• ${f.topic}</strong>
-          <p style="white-space:pre-line; margin-top:4px; font-family:monospace; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px; font-size:0.88rem;">${f.content}</p>
+        <div style="margin-top:16px; background:rgba(255,255,255,0.03); border:1px solid var(--card-border); padding:14px; border-radius:10px;">
+          <h4 style="color:#f59e0b; font-size:1rem; margin-bottom:6px;">${f.topic}</h4>
+          <div style="background:rgba(99, 102, 241, 0.15); border-left:4px solid #6366f1; padding:10px 14px; border-radius:6px; font-weight:700; font-size:1.02rem; color:#818cf8; font-family:monospace; margin:8px 0; overflow-x:auto;">
+            ${f.eq}
+          </div>
+          <p style="white-space:pre-line; margin-top:8px; font-size:0.92rem; line-height:1.6; color:var(--text-main);">${f.desc}</p>
         </div>
       `;
     });
@@ -382,12 +385,12 @@ function renderSubjectSummaries() {
     const card = document.createElement('div');
     card.className = 'formula-card';
     
-    let html = `<h4 style="color:var(--primary); font-size:1.1rem; border-bottom:1px solid var(--card-border); padding-bottom:6px;">${subSum.title}</h4>`;
+    let html = `<h3 style="color:var(--primary); font-size:1.2rem; border-bottom:2px solid var(--primary); padding-bottom:8px; margin-bottom:16px;">${subSum.title}</h3>`;
     subSum.sections.forEach(sec => {
       html += `
-        <div style="margin-top:12px;">
-          <strong style="color:#38bdf8; font-size:0.95rem;">${sec.heading}</strong>
-          <p style="margin-top:4px; font-size:0.92rem; line-height:1.6; color:var(--text-main);">${sec.detail}</p>
+        <div style="margin-top:16px; background:rgba(255,255,255,0.02); border:1px solid var(--card-border); border-radius:10px; padding:16px;">
+          <h4 style="color:#38bdf8; font-size:1.05rem; margin-bottom:8px;">${sec.heading}</h4>
+          <p style="white-space:pre-line; margin-top:6px; font-size:0.94rem; line-height:1.75; color:var(--text-main); border-top:1px dashed var(--card-border); padding-top:8px;">${sec.detail}</p>
         </div>
       `;
     });
