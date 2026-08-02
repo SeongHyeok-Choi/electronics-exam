@@ -33,6 +33,12 @@ let userAnswers = {};
 let searchQuery = '';
 let miniQuizQuestions = [];
 
+// Real Exam State
+let realExamQuestions = []; // 80 questions (20 per subject)
+let examSubmitted = false;
+let timerInterval = null;
+let timeLeftSeconds = 80 * 60; // 80 minutes
+
 let wrongQuestions = JSON.parse(localStorage.getItem('wrong_questions') || '[]');
 let bookmarkedQuestions = JSON.parse(localStorage.getItem('bookmarked_questions') || '[]');
 
@@ -53,12 +59,17 @@ const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 const bookmarkBtn = document.getElementById('bookmark-btn');
 
+const practiceBar = document.getElementById('practice-bar');
+const shuffleQuestionsBtn = document.getElementById('shuffle-questions-btn');
+
+const examBar = document.getElementById('exam-bar');
+const examTimer = document.getElementById('exam-timer');
+const submitExamBtn = document.getElementById('submit-exam-btn');
+
 const miniQuizBar = document.getElementById('mini-quiz-bar');
 const newMiniQuizBtn = document.getElementById('new-mini-quiz-btn');
 const headerMiniQuizBtn = document.getElementById('header-mini-quiz-btn');
 
-const practiceBar = document.getElementById('practice-bar');
-const shuffleQuestionsBtn = document.getElementById('shuffle-questions-btn');
 const wrongResetBar = document.getElementById('wrong-reset-bar');
 const resetWrongBtn = document.getElementById('reset-wrong-btn');
 
@@ -67,6 +78,11 @@ const omrBtn = document.getElementById('omr-btn');
 const omrModal = document.getElementById('omr-modal');
 const closeOmr = document.getElementById('close-omr');
 const omrGridContainer = document.getElementById('omr-grid-container');
+
+const examResultModal = document.getElementById('exam-result-modal');
+const closeExamResult = document.getElementById('close-exam-result');
+const examReportCard = document.getElementById('exam-report-card');
+const reviewExamBtn = document.getElementById('review-exam-btn');
 
 const formulaBtn = document.getElementById('formula-btn');
 const formulaModal = document.getElementById('formula-modal');
@@ -108,21 +124,7 @@ function restoreUserPosition() {
         card.classList.toggle('active', parseInt(card.dataset.subject, 10) === currentSubjectId);
       });
 
-      const subSelector = document.getElementById('subject-selector');
-      if (currentMode === 'wrong' || currentMode === 'bookmark' || currentMode === 'mini10') {
-        subSelector.style.display = 'none';
-      } else {
-        subSelector.style.display = 'grid';
-      }
-
-      if (currentMode === 'mini10') {
-        miniQuizBar.style.display = 'block';
-        generateMiniQuiz();
-      }
-
-      if (currentMode === 'wrong') {
-        wrongResetBar.style.display = 'block';
-      }
+      updateBarVisibilities();
     } catch (e) {
       console.error("Failed to restore position", e);
     }
@@ -139,7 +141,101 @@ function saveUserPosition() {
   localStorage.setItem('last_user_position', JSON.stringify(pos));
 }
 
-// Generate 10 Random Mini Quiz Questions from all 4000 questions
+// Generate Real Exam (80 Questions: 20 per subject)
+function generateRealExam() {
+  realExamQuestions = [];
+  examSubmitted = false;
+  timeLeftSeconds = 80 * 60;
+
+  for (let sId = 1; sId <= 4; sId++) {
+    const subData = [...allSubjects[sId].data];
+    // shuffle
+    for (let i = subData.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [subData[i], subData[j]] = [subData[j], subData[i]];
+    }
+    // Pick 20 questions
+    realExamQuestions.push(...subData.slice(0, 20));
+  }
+
+  currentQuestionIndex = 0;
+  startExamTimer();
+}
+
+// Exam Timer Counter
+function startExamTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (timeLeftSeconds <= 0) {
+      clearInterval(timerInterval);
+      alert("⏱️ 시험 시간이 종료되었습니다! 자동으로 채점을 진행합니다.");
+      submitRealExam();
+      return;
+    }
+    timeLeftSeconds--;
+    const mins = Math.floor(timeLeftSeconds / 60);
+    const secs = timeLeftSeconds % 60;
+    examTimer.textContent = `남은 시간 ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  }, 1000);
+}
+
+// Submit Real Exam & Generate Scorecard
+function submitRealExam() {
+  examSubmitted = true;
+  if (timerInterval) clearInterval(timerInterval);
+
+  let subScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+  let subCounts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+  realExamQuestions.forEach(q => {
+    let subId = 1;
+    for (const [id, sub] of Object.entries(allSubjects)) {
+      if (sub.data.some(item => item.id === q.id)) {
+        subId = parseInt(id, 10);
+        break;
+      }
+    }
+    subCounts[subId]++;
+    if (userAnswers[q.id] === q.answer) {
+      subScores[subId]++;
+    }
+  });
+
+  // Calculate scores per subject (out of 100)
+  const score1 = Math.round((subScores[1] / 20) * 100);
+  const score2 = Math.round((subScores[2] / 20) * 100);
+  const score3 = Math.round((subScores[3] / 20) * 100);
+  const score4 = Math.round((subScores[4] / 20) * 100);
+
+  const avgScore = Math.round((score1 + score2 + score3 + score4) / 4);
+  const isFailedByCutoff = (score1 < 40 || score2 < 40 || score3 < 40 || score4 < 40);
+  const isPassed = (avgScore >= 60 && !isFailedByCutoff);
+
+  let resultHtml = `
+    <div style="font-size: 1.6rem; font-weight: 800; color: ${isPassed ? '#10b981' : '#ef4444'}; margin-bottom:12px;">
+      ${isPassed ? '🎉 최종 합격 (PASS)' : '❌ 불합격 (FAIL)'}
+    </div>
+    <div style="font-size:1.1rem; font-weight:700; margin-bottom:16px;">
+      평균 점수: <span style="color:var(--primary); font-size:1.3rem;">${avgScore}점</span> (기준: 60점 이상)
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; text-align:left; background:rgba(0,0,0,0.2); padding:14px; border-radius:10px;">
+      <div>1과목 (전기자기학): <strong>${score1}점</strong> ${score1 < 40 ? '<span style="color:#ef4444;">(과락)</span>' : ''}</div>
+      <div>2과목 (디지털응용): <strong>${score2}점</strong> ${score2 < 40 ? '<span style="color:#ef4444;">(과락)</span>' : ''}</div>
+      <div>3과목 (전자회로설계): <strong>${score3}점</strong> ${score3 < 40 ? '<span style="color:#ef4444;">(과락)</span>' : ''}</div>
+      <div>4과목 (전자회로검증): <strong>${score4}점</strong> ${score4 < 40 ? '<span style="color:#ef4444;">(과락)</span>' : ''}</div>
+    </div>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:10px;">
+      ※ 각 과목 40점 미만 시 과락으로 불합격 처리됩니다.
+    </p>
+  `;
+
+  examReportCard.innerHTML = resultHtml;
+  examResultModal.style.display = 'flex';
+
+  renderQuestion();
+}
+
+// Generate 10 Random Mini Quiz Questions from all 6000 questions
 function generateMiniQuiz() {
   const pool = [];
   Object.values(allSubjects).forEach(sub => {
@@ -158,7 +254,10 @@ function generateMiniQuiz() {
 // Helper to filter active question list
 function getActiveQuestions() {
   let list = [];
-  if (currentMode === 'mini10') {
+  if (currentMode === 'exam') {
+    if (realExamQuestions.length === 0) generateRealExam();
+    list = realExamQuestions;
+  } else if (currentMode === 'mini10') {
     if (miniQuizQuestions.length === 0) generateMiniQuiz();
     list = miniQuizQuestions;
   } else if (currentMode === 'wrong') {
@@ -187,6 +286,21 @@ function getActiveQuestions() {
   }
 
   return list;
+}
+
+// Update Action Bars Visibility
+function updateBarVisibilities() {
+  const subSelector = document.getElementById('subject-selector');
+  if (currentMode === 'wrong' || currentMode === 'bookmark' || currentMode === 'mini10' || currentMode === 'exam') {
+    subSelector.style.display = 'none';
+  } else {
+    subSelector.style.display = 'grid';
+  }
+
+  practiceBar.style.display = (currentMode === 'practice') ? 'block' : 'none';
+  examBar.style.display = (currentMode === 'exam') ? 'block' : 'none';
+  miniQuizBar.style.display = (currentMode === 'mini10') ? 'block' : 'none';
+  wrongResetBar.style.display = (currentMode === 'wrong') ? 'block' : 'none';
 }
 
 // Render Question Card
@@ -221,7 +335,9 @@ function renderQuestion() {
     }
   }
 
-  if (currentMode === 'mini10') {
+  if (currentMode === 'exam') {
+    subjectTag.textContent = `⏱️ 실전 모의고사 80제 세트 - ${subName}`;
+  } else if (currentMode === 'mini10') {
     subjectTag.textContent = `🎲 미니퀴즈 세트 (랜덤 10제) - ${subName}`;
   } else {
     subjectTag.textContent = subName;
@@ -248,11 +364,18 @@ function renderQuestion() {
     optEl.className = 'option-item';
 
     if (isAnswered) {
-      optEl.classList.add('disabled');
-      if (idx === q.answer) {
-        optEl.classList.add('correct');
-      } else if (idx === selectedAns) {
-        optEl.classList.add('wrong');
+      if (currentMode === 'exam' && !examSubmitted) {
+        // In exam mode before submission, only highlight selected option, no correct/wrong colors
+        if (idx === selectedAns) {
+          optEl.classList.add('correct');
+        }
+      } else {
+        optEl.classList.add('disabled');
+        if (idx === q.answer) {
+          optEl.classList.add('correct');
+        } else if (idx === selectedAns) {
+          optEl.classList.add('wrong');
+        }
       }
     }
 
@@ -261,27 +384,25 @@ function renderQuestion() {
       <div class="option-label">${optText}</div>
     `;
 
-    if (!isAnswered) {
+    if (!isAnswered || (currentMode === 'exam' && !examSubmitted)) {
       optEl.addEventListener('click', () => handleOptionSelect(q, idx));
     }
 
     optionsList.appendChild(optEl);
   });
 
-  if (isAnswered || currentMode === 'practice' || currentMode === 'mini10') {
-    if (isAnswered) {
-      explanationContent.innerHTML = `
-        <strong>[정답: ${q.answer + 1}번]</strong><br/><br/>
-        ${q.explanation}
-      `;
-      explanationBox.style.display = 'block';
-    } else {
-      explanationBox.style.display = 'none';
-    }
+  // Show explanation only in practice, mini10, or submitted exam mode
+  if (isAnswered && (currentMode !== 'exam' || examSubmitted)) {
+    explanationContent.innerHTML = `
+      <strong>[정답: ${q.answer + 1}번]</strong><br/><br/>
+      ${q.explanation}
+    `;
+    explanationBox.style.display = 'block';
   } else {
     explanationBox.style.display = 'none';
   }
 
+  // Dynamic progress gauge text (Exact 1500 / 80 / 10)
   currentQuestionNum.textContent = `문제 ${currentQuestionIndex + 1} / ${questions.length}`;
   const pct = Math.round(((currentQuestionIndex + 1) / questions.length) * 100);
   progressFill.style.width = `${pct}%`;
@@ -297,12 +418,12 @@ function handleOptionSelect(q, selectedIdx) {
 
   const isCorrect = selectedIdx === q.answer;
 
-  if (!isCorrect) {
+  if (!isCorrect && currentMode !== 'exam') {
     if (!wrongQuestions.includes(q.id)) {
       wrongQuestions.push(q.id);
       localStorage.setItem('wrong_questions', JSON.stringify(wrongQuestions));
     }
-  } else {
+  } else if (isCorrect && currentMode !== 'exam') {
     if (window.confetti) {
       window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
     }
@@ -430,37 +551,19 @@ modeTabs.forEach(tab => {
     currentMode = tab.dataset.mode;
     currentQuestionIndex = 0;
 
-    const subSelector = document.getElementById('subject-selector');
-    if (currentMode === 'wrong' || currentMode === 'bookmark' || currentMode === 'mini10') {
-      subSelector.style.display = 'none';
-    } else {
-      subSelector.style.display = 'grid';
-    }
+    updateBarVisibilities();
 
     if (currentMode === 'mini10') {
-      miniQuizBar.style.display = 'block';
       generateMiniQuiz();
-    } else {
-      miniQuizBar.style.display = 'none';
-    }
-
-    if (currentMode === 'wrong') {
-      wrongResetBar.style.display = 'block';
-    } else {
-      wrongResetBar.style.display = 'none';
-    }
-
-    if (currentMode === 'practice' || currentMode === 'exam') {
-      if (practiceBar) practiceBar.style.display = 'block';
-    } else {
-      if (practiceBar) practiceBar.style.display = 'none';
+    } else if (currentMode === 'exam') {
+      generateRealExam();
     }
 
     renderQuestion();
   });
 });
 
-// Shuffle questions in current subject
+// Shuffle current subject questions
 function shuffleCurrentSubject() {
   const currentData = allSubjects[currentSubjectId].data;
   for (let i = currentData.length - 1; i > 0; i--) {
@@ -473,10 +576,25 @@ function shuffleCurrentSubject() {
 if (shuffleQuestionsBtn) {
   shuffleQuestionsBtn.addEventListener('click', () => {
     shuffleCurrentSubject();
-    alert("현재 과목의 문제 순서가 무작위로 새로 섞였습니다!");
+    alert("현재 과목의 1,500문제 순서가 무작위로 새로 섞였습니다!");
     renderQuestion();
   });
 }
+
+submitExamBtn.addEventListener('click', () => {
+  if (confirm("실전 모의고사를 제출하고 채점하시겠습니까?")) {
+    submitRealExam();
+  }
+});
+
+closeExamResult.addEventListener('click', () => {
+  examResultModal.style.display = 'none';
+});
+
+reviewExamBtn.addEventListener('click', () => {
+  examResultModal.style.display = 'none';
+  renderQuestion();
+});
 
 newMiniQuizBtn.addEventListener('click', () => {
   generateMiniQuiz();
@@ -489,9 +607,7 @@ if (headerMiniQuizBtn) {
     modeTabs.forEach(t => {
       t.classList.toggle('active', t.dataset.mode === 'mini10');
     });
-    document.getElementById('subject-selector').style.display = 'none';
-    miniQuizBar.style.display = 'block';
-    wrongResetBar.style.display = 'none';
+    updateBarVisibilities();
     generateMiniQuiz();
     renderQuestion();
   });
@@ -591,10 +707,10 @@ importJsonFile.addEventListener('change', (e) => {
 });
 
 resetDataBtn.addEventListener('click', () => {
-  if (confirm("기본 4,000문제 데이터셋으로 초기화하시겠습니까?")) {
+  if (confirm("기본 6,000문제 데이터셋으로 초기화하시겠습니까?")) {
     localStorage.removeItem('custom_exam_dataset');
     allSubjects = loadSubjectData();
-    alert("데이터가 기본 4,000문제로 초기화되었습니다.");
+    alert("데이터가 기본 6,000문제로 초기화되었습니다.");
     manageModal.style.display = 'none';
     renderQuestion();
   }

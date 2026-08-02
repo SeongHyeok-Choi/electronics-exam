@@ -1,9 +1,9 @@
-const CACHE_NAME = 'electronics-exam-v4005-force-refresh';
+const CACHE_NAME = 'electronics-exam-v4006-force-refresh';
 const ASSETS = [
   './',
-  './index.html?v=4005',
-  './css/styles.css?v=4005',
-  './js/app.js?v=4005',
+  './index.html?v=4006',
+  './css/styles.css?v=4006',
+  './js/app.js?v=4006',
   './js/circuitSVGs.js',
   './js/summaryData.js',
   './js/data/subject1.js',
