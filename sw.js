@@ -1,9 +1,9 @@
-const CACHE_NAME = 'electronics-exam-v4006-force-refresh';
+const CACHE_NAME = 'electronics-exam-v4007-iphone16pro-fit';
 const ASSETS = [
   './',
-  './index.html?v=4006',
-  './css/styles.css?v=4006',
-  './js/app.js?v=4006',
+  './index.html?v=4007',
+  './css/styles.css?v=4007',
+  './js/app.js?v=4007',
   './js/circuitSVGs.js',
   './js/summaryData.js',
   './js/data/subject1.js',

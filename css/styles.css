@@ -636,8 +636,122 @@ header {
   display: inline-block;
 }
 
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* iPhone 16 Pro & Mobile Responsive Optimization */
 @media (max-width: 600px) {
-  .btn-text { display: none; }
-  .subject-grid { grid-template-columns: 1fr 1fr; }
-  .question-card { padding: 16px; }
+  header {
+    padding: 10px 12px;
+  }
+
+  .header-container {
+    gap: 8px;
+  }
+
+  .logo span {
+    font-size: 0.98rem;
+  }
+
+  .header-actions {
+    gap: 6px;
+    overflow-x: auto;
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .header-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .icon-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .btn-text {
+    display: inline-block;
+    font-size: 0.78rem;
+  }
+
+  .main-container {
+    padding: 12px 10px;
+  }
+
+  .tab-group {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+  }
+
+  .subject-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .subject-card {
+    padding: 12px;
+  }
+
+  .subject-info h4 {
+    font-size: 0.88rem;
+  }
+
+  .sub-progress {
+    font-size: 0.75rem;
+  }
+
+  .question-card {
+    padding: 16px 14px;
+    border-radius: 14px;
+  }
+
+  .question-text {
+    font-size: 1rem;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+
+  .option-item {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .option-label {
+    font-size: 0.92rem;
+    word-break: break-word;
+  }
+
+  .modal-content {
+    padding: 16px;
+    max-height: 90vh;
+    border-radius: 16px;
+  }
+
+  .notebook-formula-box {
+    padding: 12px;
+  }
+
+  .handwrite-eq {
+    font-size: 0.95rem !important;
+    padding: 8px 10px !important;
+  }
 }
