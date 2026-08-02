@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>전자기사 Master - 800문제 풀이 & 회로도 & 미니퀴즈</title>
+  <title>전자기사 Master - 4,000문제 & 10제 미니퀴즈</title>
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -28,9 +28,14 @@
     <div class="header-container">
       <div class="logo">
         <i data-lucide="cpu"></i>
-        <span>전자기사 Master (800제)</span>
+        <span>전자기사 Master (4,000제)</span>
       </div>
       <div class="header-actions">
+        <!-- Prominent Mini Quiz Header Button -->
+        <button class="icon-btn highlight-btn" id="header-mini-quiz-btn" title="랜덤 10문제 뽑기">
+          <i data-lucide="dices"></i>
+          <span>🎲 10제 미니퀴즈</span>
+        </button>
         <button class="icon-btn" id="formula-btn" title="핵심 공식집">
           <i data-lucide="book-open"></i>
           <span class="btn-text">공식집</span>
@@ -39,7 +44,7 @@
           <i data-lucide="grid"></i>
           <span class="btn-text">OMR</span>
         </button>
-        <button class="icon-btn" id="manage-btn" title="문제 관리 (JSON 임포트/엑스포트)">
+        <button class="icon-btn" id="manage-btn" title="문제 관리">
           <i data-lucide="database"></i>
           <span class="btn-text">문제관리</span>
         </button>
@@ -61,22 +66,22 @@
       <!-- Search Input Bar -->
       <div class="search-bar">
         <i data-lucide="search"></i>
-        <input type="text" id="search-input" placeholder="키워드 검색 (예: OP-Amp, 쿨롱, 카르노 맵, 플립플롭)...">
+        <input type="text" id="search-input" placeholder="4,000문제 키워드 검색 (예: OP-Amp, 쿨롱, 카르노 맵, 플립플롭)...">
       </div>
 
       <!-- Mode Tabs -->
       <div class="tab-group" id="mode-tabs">
         <button class="tab-btn active" data-mode="practice">📖 연습 모드</button>
-        <button class="tab-btn" data-mode="mini10">🎲 10문제 미니퀴즈</button>
+        <button class="tab-btn mini-tab-highlight" data-mode="mini10">🎲 10문제 미니퀴즈 (랜덤)</button>
         <button class="tab-btn" data-mode="exam">⏱️ 실전 모의고사</button>
         <button class="tab-btn" data-mode="wrong">❌ 오답 노트</button>
         <button class="tab-btn" data-mode="bookmark">⭐️ 북마크</button>
       </div>
 
-      <!-- Mini Quiz New Set Action -->
-      <div id="mini-quiz-bar" style="display:none; text-align:right; margin-bottom: 6px;">
-        <button class="icon-btn" id="new-mini-quiz-btn" style="background:var(--primary); color:white; display:inline-flex;">
-          <i data-lucide="shuffle"></i> 새로운 랜덤 10문제 뽑기
+      <!-- Mini Quiz Action Bar -->
+      <div id="mini-quiz-bar" style="display:none; text-align:center; margin: 8px 0;">
+        <button class="nav-btn nav-btn-pri" id="new-mini-quiz-btn" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; width: 100%; justify-content: center; font-size: 1rem; padding: 14px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);">
+          <i data-lucide="shuffle"></i> 🔄 새로운 랜덤 10문제 새로 뽑기!
         </button>
       </div>
 
@@ -85,25 +90,25 @@
         <div class="subject-card active" data-subject="1">
           <div class="subject-info">
             <h4>1과목: 전기자기학</h4>
-            <span class="sub-progress">200문제</span>
+            <span class="sub-progress">1,000문제</span>
           </div>
         </div>
         <div class="subject-card" data-subject="2">
           <div class="subject-info">
             <h4>2과목: 디지털응용회로</h4>
-            <span class="sub-progress">200문제</span>
+            <span class="sub-progress">1,000문제</span>
           </div>
         </div>
         <div class="subject-card" data-subject="3">
           <div class="subject-info">
             <h4>3과목: 전자회로설계</h4>
-            <span class="sub-progress">200문제</span>
+            <span class="sub-progress">1,000문제</span>
           </div>
         </div>
         <div class="subject-card" data-subject="4">
           <div class="subject-info">
             <h4>4과목: 전자회로검증</h4>
-            <span class="sub-progress">200문제</span>
+            <span class="sub-progress">1,000문제</span>
           </div>
         </div>
       </div>
@@ -112,7 +117,7 @@
     <!-- Progress Status Bar -->
     <div class="quiz-header">
       <div class="progress-info">
-        <span id="current-question-num">문제 1 / 200</span>
+        <span id="current-question-num">문제 1 / 1000</span>
         <span id="score-info">정답률: 0%</span>
       </div>
       <div class="progress-bar-bg">
@@ -233,7 +238,7 @@
         </label>
         
         <button class="nav-btn nav-btn-sec" id="reset-data-btn" style="width:100%; color:var(--error);">
-          <i data-lucide="rotate-ccw"></i> 기본 800문제로 데이터 초기화
+          <i data-lucide="rotate-ccw"></i> 기본 4,000문제로 데이터 초기화
         </button>
       </div>
     </div>

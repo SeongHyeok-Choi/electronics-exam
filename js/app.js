@@ -54,6 +54,7 @@ const bookmarkBtn = document.getElementById('bookmark-btn');
 
 const miniQuizBar = document.getElementById('mini-quiz-bar');
 const newMiniQuizBtn = document.getElementById('new-mini-quiz-btn');
+const headerMiniQuizBtn = document.getElementById('header-mini-quiz-btn');
 
 // Modals
 const omrBtn = document.getElementById('omr-btn');
@@ -400,6 +401,19 @@ newMiniQuizBtn.addEventListener('click', () => {
   generateMiniQuiz();
   renderQuestion();
 });
+
+if (headerMiniQuizBtn) {
+  headerMiniQuizBtn.addEventListener('click', () => {
+    currentMode = 'mini10';
+    modeTabs.forEach(t => {
+      t.classList.toggle('active', t.dataset.mode === 'mini10');
+    });
+    document.getElementById('subject-selector').style.display = 'none';
+    miniQuizBar.style.display = 'block';
+    generateMiniQuiz();
+    renderQuestion();
+  });
+}
 
 // Event Listeners: Subject Selection
 subjectCards.forEach(card => {

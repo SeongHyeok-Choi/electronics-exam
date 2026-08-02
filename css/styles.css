@@ -104,6 +104,22 @@ header {
   color: white;
 }
 
+.highlight-btn {
+  background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+  color: white !important;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
+.mini-tab-highlight {
+  border: 1px solid #f59e0b !important;
+  color: #f59e0b !important;
+}
+
+.mini-tab-highlight.active {
+  background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+  color: white !important;
+}
+
 /* Search Bar */
 .search-bar {
   display: flex;
