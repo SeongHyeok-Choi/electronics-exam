@@ -9,14 +9,14 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   
-  <title>전자기사 Master - 4,000문제 & 10제 미니퀴즈</title>
+  <title>전자기사 Master - 4,000문제 & 상세 공식집 & 요약노트</title>
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
 
   <!-- CSS Stylesheet -->
-  <link rel="stylesheet" href="css/styles.css?v=4000">
+  <link rel="stylesheet" href="css/styles.css?v=4001">
   
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -40,7 +40,11 @@
           <i data-lucide="dices"></i>
           <span>🎲 10제 미니퀴즈</span>
         </button>
-        <button class="icon-btn" id="formula-btn" title="핵심 공식집">
+        <button class="icon-btn" id="summary-btn" title="핵심 요약노트">
+          <i data-lucide="file-text"></i>
+          <span class="btn-text">요약노트</span>
+        </button>
+        <button class="icon-btn" id="formula-btn" title="정밀 공식집">
           <i data-lucide="book-open"></i>
           <span class="btn-text">공식집</span>
         </button>
@@ -86,6 +90,13 @@
       <div id="mini-quiz-bar" style="display:none; text-align:center; margin: 8px 0;">
         <button class="nav-btn nav-btn-pri" id="new-mini-quiz-btn" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; width: 100%; justify-content: center; font-size: 1rem; padding: 14px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);">
           <i data-lucide="shuffle"></i> 🔄 새로운 랜덤 10문제 새로 뽑기!
+        </button>
+      </div>
+
+      <!-- Wrong Questions Reset Bar -->
+      <div id="wrong-reset-bar" style="display:none; text-align:right; margin: 6px 0;">
+        <button class="icon-btn" id="reset-wrong-btn" style="background:var(--error-bg); border-color:var(--error); color:var(--error); font-weight:700;">
+          <i data-lucide="trash-2"></i> 🗑️ 오답노트 전체 초기화
         </button>
       </div>
 
@@ -181,42 +192,25 @@
     </div>
   </div>
 
-  <!-- Formula Summary Modal -->
+  <!-- Formula Summary Modal (Dynamic Rendered) -->
   <div class="modal-overlay" id="formula-modal">
     <div class="modal-content large-modal">
       <div class="modal-header">
-        <h3>📐 전자기사 핵심 공식 요약집</h3>
+        <h3>📐 전자기사 정밀 공식집</h3>
         <button class="close-icon-btn" id="close-formula">&times;</button>
       </div>
-      <div class="formula-list">
-        <div class="formula-card">
-          <h4>1과목 전기자기학</h4>
-          <p>• 쿨롱의 힘: F = k · (q1·q2) / r² [N]</p>
-          <p>• 전계 E = F / q = σ / ε₀ [V/m]</p>
-          <p>• 콘덴서 에너지: W = 1/2 C V² = Q² / (2C) [J]</p>
-          <p>• 인덕터 자기에너지: W = 1/2 L I² [J]</p>
-          <p>• 맥스웰 4방정식: ∇·D=ρ, ∇·B=0, ∇×E=-∂B/∂t, ∇×H=J+∂D/∂t</p>
-        </div>
-        <div class="formula-card">
-          <h4>2과목 디지털응용회로</h4>
-          <p>• 드모르간 법칙: (A+B)' = A'B', (AB)' = A'+B'</p>
-          <p>• XOR 논리: Y = A'B + AB' (입력이 다르면 1)</p>
-          <p>• N비트 카운터 상태 수 = 2ⁿ 개</p>
-        </div>
-        <div class="formula-card">
-          <h4>3과목 전자회로설계</h4>
-          <p>• 비반전 OP-Amp 이득: A_v = 1 + (Rf / R1)</p>
-          <p>• 반전 OP-Amp 이득: A_v = - (Rf / R1)</p>
-          <p>• 브리지 정류 직류 전압: V_dc ≒ 0.9 V_rms</p>
-          <p>• 발진 조건 (바르크하우젠): |Aβ| = 1, 위상차 0°</p>
-        </div>
-        <div class="formula-card">
-          <h4>4과목 전자회로검증</h4>
-          <p>• 10:1 프로브 실제 전압 = 읽기값 × 10</p>
-          <p>• 나이퀴스트 샘플링: f_s ≥ 2 f_max</p>
-          <p>• 리사주 정원 파형 위상차 = 90°</p>
-        </div>
+      <div class="formula-list" id="formula-list-container"></div>
+    </div>
+  </div>
+
+  <!-- Summary Notes Modal (Dynamic Rendered) -->
+  <div class="modal-overlay" id="summary-modal">
+    <div class="modal-content large-modal">
+      <div class="modal-header">
+        <h3>📝 전자기사 과목별 핵심 요약노트</h3>
+        <button class="close-icon-btn" id="close-summary">&times;</button>
       </div>
+      <div class="formula-list" id="summary-list-container"></div>
     </div>
   </div>
 
@@ -265,6 +259,6 @@
   </div>
 
   <!-- Application Modules -->
-  <script type="module" src="js/app.js?v=4000"></script>
+  <script type="module" src="js/app.js?v=4001"></script>
 </body>
 </html>

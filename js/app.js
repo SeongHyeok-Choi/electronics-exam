@@ -3,6 +3,7 @@ import { subject2Data } from './data/subject2.js';
 import { subject3Data } from './data/subject3.js';
 import { subject4Data } from './data/subject4.js';
 import { circuitSVGs } from './circuitSVGs.js';
+import { detailedFormulas, subjectSummaries } from './summaryData.js';
 
 // Global Datasets with LocalStorage Custom Override
 function loadSubjectData() {
@@ -56,6 +57,9 @@ const miniQuizBar = document.getElementById('mini-quiz-bar');
 const newMiniQuizBtn = document.getElementById('new-mini-quiz-btn');
 const headerMiniQuizBtn = document.getElementById('header-mini-quiz-btn');
 
+const wrongResetBar = document.getElementById('wrong-reset-bar');
+const resetWrongBtn = document.getElementById('reset-wrong-btn');
+
 // Modals
 const omrBtn = document.getElementById('omr-btn');
 const omrModal = document.getElementById('omr-modal');
@@ -65,6 +69,12 @@ const omrGridContainer = document.getElementById('omr-grid-container');
 const formulaBtn = document.getElementById('formula-btn');
 const formulaModal = document.getElementById('formula-modal');
 const closeFormula = document.getElementById('close-formula');
+const formulaListContainer = document.getElementById('formula-list-container');
+
+const summaryBtn = document.getElementById('summary-btn');
+const summaryModal = document.getElementById('summary-modal');
+const closeSummary = document.getElementById('close-summary');
+const summaryListContainer = document.getElementById('summary-list-container');
 
 const manageBtn = document.getElementById('manage-btn');
 const manageModal = document.getElementById('manage-modal');
@@ -88,12 +98,10 @@ function restoreUserPosition() {
       if (pos.subjectId) currentSubjectId = pos.subjectId;
       if (pos.questionIndex !== undefined) currentQuestionIndex = pos.questionIndex;
 
-      // Update Mode Tab active state
       modeTabs.forEach(tab => {
         tab.classList.toggle('active', tab.dataset.mode === currentMode);
       });
 
-      // Update Subject Card active state
       subjectCards.forEach(card => {
         card.classList.toggle('active', parseInt(card.dataset.subject, 10) === currentSubjectId);
       });
@@ -108,6 +116,10 @@ function restoreUserPosition() {
       if (currentMode === 'mini10') {
         miniQuizBar.style.display = 'block';
         generateMiniQuiz();
+      }
+
+      if (currentMode === 'wrong') {
+        wrongResetBar.style.display = 'block';
       }
     } catch (e) {
       console.error("Failed to restore position", e);
@@ -125,14 +137,13 @@ function saveUserPosition() {
   localStorage.setItem('last_user_position', JSON.stringify(pos));
 }
 
-// Generate 10 Random Mini Quiz Questions from all 800 questions
+// Generate 10 Random Mini Quiz Questions from all 4000 questions
 function generateMiniQuiz() {
   const pool = [];
   Object.values(allSubjects).forEach(sub => {
     sub.data.forEach(q => pool.push(q));
   });
 
-  // Shuffle pool (Fisher-Yates)
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -164,7 +175,6 @@ function getActiveQuestions() {
     list = allSubjects[currentSubjectId].data;
   }
 
-  // Apply Search Query Filter if active
   if (searchQuery.trim() !== '') {
     const qTerm = searchQuery.toLowerCase();
     list = list.filter(q => 
@@ -179,7 +189,7 @@ function getActiveQuestions() {
 
 // Render Question Card
 function renderQuestion() {
-  saveUserPosition(); // Auto-save current location
+  saveUserPosition();
 
   const questions = getActiveQuestions();
 
@@ -201,7 +211,6 @@ function renderQuestion() {
 
   const q = questions[currentQuestionIndex];
   
-  // Find subject name tag
   let subName = allSubjects[currentSubjectId].name;
   for (const [id, sub] of Object.entries(allSubjects)) {
     if (sub.data.some(item => item.id === q.id)) {
@@ -218,7 +227,6 @@ function renderQuestion() {
 
   questionText.textContent = q.question;
 
-  // Render SVG Technical Diagram if present
   if (q.diagramType && circuitSVGs[q.diagramType]) {
     diagramContainer.innerHTML = circuitSVGs[q.diagramType];
     diagramContainer.style.display = 'block';
@@ -226,11 +234,9 @@ function renderQuestion() {
     diagramContainer.style.display = 'none';
   }
 
-  // Bookmark Button State
   const isBookmarked = bookmarkedQuestions.includes(q.id);
   bookmarkBtn.classList.toggle('active', isBookmarked);
 
-  // Render Options
   optionsList.innerHTML = '';
   const selectedAns = userAnswers[q.id];
   const isAnswered = selectedAns !== undefined;
@@ -260,7 +266,6 @@ function renderQuestion() {
     optionsList.appendChild(optEl);
   });
 
-  // Render Explanation
   if (isAnswered || currentMode === 'practice' || currentMode === 'mini10') {
     if (isAnswered) {
       explanationContent.innerHTML = `
@@ -275,7 +280,6 @@ function renderQuestion() {
     explanationBox.style.display = 'none';
   }
 
-  // Progress info
   currentQuestionNum.textContent = `문제 ${currentQuestionIndex + 1} / ${questions.length}`;
   const pct = Math.round(((currentQuestionIndex + 1) / questions.length) * 100);
   progressFill.style.width = `${pct}%`;
@@ -348,6 +352,48 @@ function renderOMRGrid() {
   });
 }
 
+// Detailed Formula Renderer
+function renderDetailedFormulas() {
+  formulaListContainer.innerHTML = '';
+  Object.values(detailedFormulas).forEach(subFormulas => {
+    const card = document.createElement('div');
+    card.className = 'formula-card';
+    
+    let html = `<h4>${subFormulas.title}</h4>`;
+    subFormulas.formulas.forEach(f => {
+      html += `
+        <div style="margin-top:10px;">
+          <strong style="color:var(--warning); font-size:0.95rem;">• ${f.topic}</strong>
+          <p style="white-space:pre-line; margin-top:4px; font-family:monospace; background:rgba(0,0,0,0.2); padding:8px; border-radius:6px; font-size:0.88rem;">${f.content}</p>
+        </div>
+      `;
+    });
+    card.innerHTML = html;
+    formulaListContainer.appendChild(card);
+  });
+}
+
+// Summary Notes Renderer
+function renderSubjectSummaries() {
+  summaryListContainer.innerHTML = '';
+  Object.values(subjectSummaries).forEach(subSum => {
+    const card = document.createElement('div');
+    card.className = 'formula-card';
+    
+    let html = `<h4 style="color:var(--primary); font-size:1.1rem; border-bottom:1px solid var(--card-border); padding-bottom:6px;">${subSum.title}</h4>`;
+    subSum.sections.forEach(sec => {
+      html += `
+        <div style="margin-top:12px;">
+          <strong style="color:#38bdf8; font-size:0.95rem;">${sec.heading}</strong>
+          <p style="margin-top:4px; font-size:0.92rem; line-height:1.6; color:var(--text-main);">${sec.detail}</p>
+        </div>
+      `;
+    });
+    card.innerHTML = html;
+    summaryListContainer.appendChild(card);
+  });
+}
+
 // Search Filter Event
 searchInput.addEventListener('input', (e) => {
   searchQuery = e.target.value;
@@ -393,6 +439,12 @@ modeTabs.forEach(tab => {
       miniQuizBar.style.display = 'none';
     }
 
+    if (currentMode === 'wrong') {
+      wrongResetBar.style.display = 'block';
+    } else {
+      wrongResetBar.style.display = 'none';
+    }
+
     renderQuestion();
   });
 });
@@ -410,10 +462,21 @@ if (headerMiniQuizBtn) {
     });
     document.getElementById('subject-selector').style.display = 'none';
     miniQuizBar.style.display = 'block';
+    wrongResetBar.style.display = 'none';
     generateMiniQuiz();
     renderQuestion();
   });
 }
+
+// Reset Wrong Questions Action
+resetWrongBtn.addEventListener('click', () => {
+  if (confirm("오답노트에 저장된 모든 틀린 문제 기록을 초기화하시겠습니까?")) {
+    wrongQuestions = [];
+    localStorage.removeItem('wrong_questions');
+    alert("오답노트가 모두 초기화되었습니다.");
+    renderQuestion();
+  }
+});
 
 // Event Listeners: Subject Selection
 subjectCards.forEach(card => {
@@ -448,8 +511,17 @@ omrBtn.addEventListener('click', () => {
 });
 closeOmr.addEventListener('click', () => omrModal.style.display = 'none');
 
-formulaBtn.addEventListener('click', () => formulaModal.style.display = 'flex');
+formulaBtn.addEventListener('click', () => {
+  renderDetailedFormulas();
+  formulaModal.style.display = 'flex';
+});
 closeFormula.addEventListener('click', () => formulaModal.style.display = 'none');
+
+summaryBtn.addEventListener('click', () => {
+  renderSubjectSummaries();
+  summaryModal.style.display = 'flex';
+});
+closeSummary.addEventListener('click', () => summaryModal.style.display = 'none');
 
 manageBtn.addEventListener('click', () => manageModal.style.display = 'flex');
 closeManage.addEventListener('click', () => manageModal.style.display = 'none');
@@ -490,10 +562,10 @@ importJsonFile.addEventListener('change', (e) => {
 });
 
 resetDataBtn.addEventListener('click', () => {
-  if (confirm("기본 800문제 데이터셋으로 초기화하시겠습니까?")) {
+  if (confirm("기본 4,000문제 데이터셋으로 초기화하시겠습니까?")) {
     localStorage.removeItem('custom_exam_dataset');
     allSubjects = loadSubjectData();
-    alert("데이터가 기본 800문제로 초기화되었습니다.");
+    alert("데이터가 기본 4,000문제로 초기화되었습니다.");
     manageModal.style.display = 'none';
     renderQuestion();
   }
