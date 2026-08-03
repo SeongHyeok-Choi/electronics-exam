@@ -1,11 +1,11 @@
-import { subject1Data } from './data/subject1.js?v=4011';
-import { subject2Data } from './data/subject2.js?v=4011';
-import { subject3Data } from './data/subject3.js?v=4011';
-import { subject4Data } from './data/subject4.js?v=4011';
-import { circuitSVGs } from './circuitSVGs.js?v=4011';
-import { detailedFormulas, subjectSummaries } from './summaryData.js?v=4011';
+import { subject1Data } from './data/subject1.js?v=4012';
+import { subject2Data } from './data/subject2.js?v=4012';
+import { subject3Data } from './data/subject3.js?v=4012';
+import { subject4Data } from './data/subject4.js?v=4012';
+import { circuitSVGs } from './circuitSVGs.js?v=4012';
+import { detailedFormulas, subjectSummaries } from './summaryData.js?v=4012';
 
-const CURRENT_DATASET_VERSION = 'v4011';
+const CURRENT_DATASET_VERSION = 'v4012';
 
 // Global Datasets with LocalStorage Custom Override & Version Safety
 function loadSubjectData() {
@@ -770,7 +770,7 @@ themeToggle.addEventListener('click', () => {
 // PWA Service Worker Registration with strict update control
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js?v=4011', { updateViaCache: 'none' })
+    navigator.serviceWorker.register('./sw.js?v=4012', { updateViaCache: 'none' })
       .then(reg => {
         reg.update();
       })

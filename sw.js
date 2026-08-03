@@ -1,15 +1,15 @@
-const CACHE_NAME = 'electronics-exam-v4011';
+const CACHE_NAME = 'electronics-exam-v4012';
 const ASSETS = [
   './',
-  './index.html?v=4011',
-  './css/styles.css?v=4011',
-  './js/app.js?v=4011',
-  './js/circuitSVGs.js?v=4011',
-  './js/summaryData.js?v=4011',
-  './js/data/subject1.js?v=4011',
-  './js/data/subject2.js?v=4011',
-  './js/data/subject3.js?v=4011',
-  './js/data/subject4.js?v=4011',
+  './index.html?v=4012',
+  './css/styles.css?v=4012',
+  './js/app.js?v=4012',
+  './js/circuitSVGs.js?v=4012',
+  './js/summaryData.js?v=4012',
+  './js/data/subject1.js?v=4012',
+  './js/data/subject2.js?v=4012',
+  './js/data/subject3.js?v=4012',
+  './js/data/subject4.js?v=4012',
   './manifest.json'
 ];
 
