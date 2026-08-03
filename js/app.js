@@ -594,7 +594,8 @@ function shuffleCurrentSubject() {
 if (shuffleQuestionsBtn) {
   shuffleQuestionsBtn.addEventListener('click', () => {
     shuffleCurrentSubject();
-    alert("현재 과목의 1,500문제 순서가 무작위로 새로 섞였습니다!");
+    const count = allSubjects[currentSubjectId].data.length;
+    alert(`현재 과목의 ${count.toLocaleString()}문제 순서가 무작위로 새로 섞였습니다!`);
     renderQuestion();
   });
 }
