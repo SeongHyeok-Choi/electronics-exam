@@ -9,7 +9,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   
-  <title>전자기사 Master - 6,000문제 & 80제 실전 모의고사</title>
+  <title>전자기사 Master - 실전 모의고사 및 문제 은행</title>
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -32,7 +32,7 @@
     <div class="header-container">
       <div class="logo">
         <i data-lucide="cpu"></i>
-        <span>전자기사 Master (6,000제)</span>
+        <span>전자기사 Master (<span id="total-question-badge">...</span>제)</span>
       </div>
       <div class="header-actions">
         <!-- Prominent Mini Quiz Header Button -->
@@ -74,7 +74,7 @@
       <!-- Search Input Bar -->
       <div class="search-bar">
         <i data-lucide="search"></i>
-        <input type="text" id="search-input" placeholder="6,000문제 키워드 검색 (예: OP-Amp, 쿨롱, 카르노 맵, 플립플롭)...">
+        <input type="text" id="search-input" placeholder="문제 키워드 검색 (예: 쿨롱, 가우스 정리, 맥스웰, OP-Amp, 카르노 맵)...">
       </div>
 
       <!-- Mode Tabs -->
@@ -124,25 +124,25 @@
         <div class="subject-card active" data-subject="1">
           <div class="subject-info">
             <h4>1과목: 전기자기학</h4>
-            <span class="sub-progress">1,500문제</span>
+            <span class="sub-progress" id="sub-count-1">계산 중...</span>
           </div>
         </div>
         <div class="subject-card" data-subject="2">
           <div class="subject-info">
             <h4>2과목: 디지털응용회로</h4>
-            <span class="sub-progress">1,500문제</span>
+            <span class="sub-progress" id="sub-count-2">계산 중...</span>
           </div>
         </div>
         <div class="subject-card" data-subject="3">
           <div class="subject-info">
             <h4>3과목: 전자회로설계</h4>
-            <span class="sub-progress">1,500문제</span>
+            <span class="sub-progress" id="sub-count-3">계산 중...</span>
           </div>
         </div>
         <div class="subject-card" data-subject="4">
           <div class="subject-info">
             <h4>4과목: 전자회로검증</h4>
-            <span class="sub-progress">1,500문제</span>
+            <span class="sub-progress" id="sub-count-4">계산 중...</span>
           </div>
         </div>
       </div>
@@ -269,7 +269,7 @@
         </label>
         
         <button class="nav-btn nav-btn-sec" id="reset-data-btn" style="width:100%; color:var(--error);">
-          <i data-lucide="rotate-ccw"></i> 기본 6,000문제로 데이터 초기화
+          <i data-lucide="rotate-ccw"></i> 기본 문제 데이터셋으로 초기화
         </button>
       </div>
     </div>

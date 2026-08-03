@@ -25,6 +25,24 @@ function loadSubjectData() {
 
 let allSubjects = loadSubjectData();
 
+function updateDynamicCounts() {
+  let totalCount = 0;
+  for (let sId = 1; sId <= 4; sId++) {
+    if (allSubjects[sId] && allSubjects[sId].data) {
+      const count = allSubjects[sId].data.length;
+      totalCount += count;
+      const el = document.getElementById(`sub-count-${sId}`);
+      if (el) {
+        el.textContent = `${count.toLocaleString()}문제`;
+      }
+    }
+  }
+  const badgeEl = document.getElementById('total-question-badge');
+  if (badgeEl) {
+    badgeEl.textContent = totalCount.toLocaleString();
+  }
+}
+
 // App State
 let currentSubjectId = 1;
 let currentMode = 'practice'; // 'practice' | 'mini10' | 'exam' | 'wrong' | 'bookmark'
@@ -693,6 +711,7 @@ importJsonFile.addEventListener('change', (e) => {
       if (parsed[1] && parsed[2] && parsed[3] && parsed[4]) {
         allSubjects = parsed;
         localStorage.setItem('custom_exam_dataset', JSON.stringify(parsed));
+        updateDynamicCounts();
         alert("새로운 문제집 JSON 데이터가 성공적으로 적용되었습니다!");
         manageModal.style.display = 'none';
         renderQuestion();
@@ -707,10 +726,11 @@ importJsonFile.addEventListener('change', (e) => {
 });
 
 resetDataBtn.addEventListener('click', () => {
-  if (confirm("기본 6,000문제 데이터셋으로 초기화하시겠습니까?")) {
+  if (confirm("기본 문제 데이터셋으로 초기화하시겠습니까?")) {
     localStorage.removeItem('custom_exam_dataset');
     allSubjects = loadSubjectData();
-    alert("데이터가 기본 6,000문제로 초기화되었습니다.");
+    updateDynamicCounts();
+    alert("데이터가 기본 문제 데이터셋으로 초기화되었습니다.");
     manageModal.style.display = 'none';
     renderQuestion();
   }
@@ -748,6 +768,7 @@ if ('serviceWorker' in navigator) {
 // App Initialization
 document.addEventListener('DOMContentLoaded', () => {
   restoreUserPosition();
+  updateDynamicCounts();
   renderQuestion();
   if (window.lucide) window.lucide.createIcons();
 });
