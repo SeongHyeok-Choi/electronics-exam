@@ -1,12 +1,20 @@
-import { subject1Data } from './data/subject1.js';
-import { subject2Data } from './data/subject2.js';
-import { subject3Data } from './data/subject3.js';
-import { subject4Data } from './data/subject4.js';
-import { circuitSVGs } from './circuitSVGs.js';
-import { detailedFormulas, subjectSummaries } from './summaryData.js';
+import { subject1Data } from './data/subject1.js?v=4011';
+import { subject2Data } from './data/subject2.js?v=4011';
+import { subject3Data } from './data/subject3.js?v=4011';
+import { subject4Data } from './data/subject4.js?v=4011';
+import { circuitSVGs } from './circuitSVGs.js?v=4011';
+import { detailedFormulas, subjectSummaries } from './summaryData.js?v=4011';
 
-// Global Datasets with LocalStorage Custom Override
+const CURRENT_DATASET_VERSION = 'v4011';
+
+// Global Datasets with LocalStorage Custom Override & Version Safety
 function loadSubjectData() {
+  const savedVer = localStorage.getItem('exam_dataset_version');
+  if (savedVer !== CURRENT_DATASET_VERSION) {
+    localStorage.removeItem('custom_exam_dataset');
+    localStorage.setItem('exam_dataset_version', CURRENT_DATASET_VERSION);
+  }
+
   const customData = localStorage.getItem('custom_exam_dataset');
   if (customData) {
     try {
@@ -759,10 +767,14 @@ themeToggle.addEventListener('click', () => {
   document.documentElement.setAttribute('data-theme', nextTheme);
 });
 
-// PWA Service Worker Registration
+// PWA Service Worker Registration with strict update control
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW reg failed: ', err));
+    navigator.serviceWorker.register('./sw.js?v=4011', { updateViaCache: 'none' })
+      .then(reg => {
+        reg.update();
+      })
+      .catch(err => console.log('SW reg failed: ', err));
   });
 }
 

@@ -1,15 +1,15 @@
-const CACHE_NAME = 'electronics-exam-v4008-iphone-overflow-fix';
+const CACHE_NAME = 'electronics-exam-v4011';
 const ASSETS = [
   './',
-  './index.html?v=4008',
-  './css/styles.css?v=4008',
-  './js/app.js?v=4008',
-  './js/circuitSVGs.js',
-  './js/summaryData.js',
-  './js/data/subject1.js',
-  './js/data/subject2.js',
-  './js/data/subject3.js',
-  './js/data/subject4.js',
+  './index.html?v=4011',
+  './css/styles.css?v=4011',
+  './js/app.js?v=4011',
+  './js/circuitSVGs.js?v=4011',
+  './js/summaryData.js?v=4011',
+  './js/data/subject1.js?v=4011',
+  './js/data/subject2.js?v=4011',
+  './js/data/subject3.js?v=4011',
+  './js/data/subject4.js?v=4011',
   './manifest.json'
 ];
 
@@ -21,13 +21,14 @@ self.addEventListener('install', (e) => {
   );
 });
 
-// Activate Event - Delete old caches
+// Activate Event - Delete all old caches
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
+            console.log('[ServiceWorker] Removing old cache:', key);
             return caches.delete(key);
           }
         })
@@ -36,9 +37,23 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Network First strategy
+// Network First, fallback to cache
 self.addEventListener('fetch', (e) => {
+  // Only handle GET requests
+  if (e.request.method !== 'GET') return;
+  
   e.respondWith(
-    fetch(e.request).catch(() => caches.match(e.request))
+    fetch(e.request)
+      .then((response) => {
+        // Clone and put in cache if valid
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
